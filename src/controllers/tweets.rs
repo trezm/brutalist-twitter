@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use log::error;
 use serde::Deserialize;
 use thruster::{
     context::context_ext::ContextExt,
@@ -66,7 +67,7 @@ pub async fn reply(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareRe
 
     let ReplyReq { content } =
         serde_urlencoded::from_str(&context.body_string().await.map_err(|_e| {
-            println!("_e: {:#?}", _e);
+            error!("_e: {:#?}", _e);
 
             ThrusterError::parsing_error(
                 Ctx::new_without_request(context.extra.clone()),
@@ -74,7 +75,7 @@ pub async fn reply(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareRe
             )
         })?)
         .map_err(|_e| {
-            println!("_e: {:#?}", _e);
+            error!("_e: {:#?}", _e);
 
             ThrusterError::parsing_error(
                 Ctx::new_without_request(context.extra.clone()),
@@ -90,7 +91,7 @@ pub async fn reply(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareRe
     )
     .await
     .map_err(|_e| {
-        println!("_e: {:#?}", _e);
+        error!("_e: {:#?}", _e);
         ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
     })?;
 
@@ -116,7 +117,7 @@ pub async fn like_tweet(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> Middlew
     )
     .await
     .map_err(|_e| {
-        println!("_e: {:#?}", _e);
+        error!("_e: {:#?}", _e);
         ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
     })?;
 
@@ -148,7 +149,7 @@ pub async fn retweet(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> Middleware
     )
     .await
     .map_err(|_e| {
-        println!("_e: {:#?}", _e);
+        error!("_e: {:#?}", _e);
         ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
     })?;
 

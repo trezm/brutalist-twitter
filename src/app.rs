@@ -72,9 +72,10 @@ async fn profiling(mut context: Ctx, next: MiddlewareNext<Ctx>) -> MiddlewareRes
 
     let elapsed_time = start_time.elapsed();
     info!(
-        "{}μs\t\t{}\t{}",
+        "{}μs\t\t{}\t{}\t{}",
         elapsed_time.as_micros(),
         method,
+        context.status,
         path_and_query,
     );
 

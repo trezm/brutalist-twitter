@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 use askama::Template;
+use log::{error, info};
 use thruster::{
     context::context_ext::ContextExt,
     errors::{ErrorSet, ThrusterError},
@@ -49,6 +50,7 @@ pub struct Feed<'a> {
 
 #[middleware_fn]
 pub async fn home(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareResult<Ctx> {
+    info!("Starting home...");
     let user = context.extra.user.clone();
     let user_id = context.extra.user.clone().map(|v| v.id);
 
@@ -63,7 +65,7 @@ pub async fn home(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareRes
             )
             .await
             .map_err(|_e| {
-                println!("_e: {:#?}", _e);
+                error!("_e: {:#?}", _e);
 
                 ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
             })?,
@@ -71,6 +73,7 @@ pub async fn home(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareRes
         .render()
         .unwrap(),
     );
+    info!("Ending home...");
 
     Ok(context)
 }
@@ -95,7 +98,7 @@ pub async fn reply(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareRe
     let tweet = Tweet::get_tweet_with_user_info(&context.extra.pool, &tweet_id, Some(&user.id))
         .await
         .map_err(|_e| {
-            println!("_e: {:#?}", _e);
+            error!("_e: {:#?}", _e);
             ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
         })?;
 
@@ -127,7 +130,7 @@ pub async fn single_tweet(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> Middl
     let tweet = Tweet::get_tweet_with_user_info(&context.extra.pool, &tweet_id, user_id.as_ref())
         .await
         .map_err(|_e| {
-            println!("_e: {:#?}", _e);
+            error!("_e: {:#?}", _e);
             ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
         })?;
     let replies = Tweet::get_tweet_replies_with_user_info(
@@ -138,7 +141,7 @@ pub async fn single_tweet(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> Middl
     )
     .await
     .map_err(|_e| {
-        println!("_e: {:#?}", _e);
+        error!("_e: {:#?}", _e);
         ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
     })?;
 

@@ -2,6 +2,7 @@ use argon2::{
     password_hash::{rand_core::OsRng, SaltString},
     Argon2, PasswordHash, PasswordHasher, PasswordVerifier,
 };
+use log::error;
 use serde::Deserialize;
 use thruster::{
     errors::{ErrorSet, ThrusterError},
@@ -24,14 +25,14 @@ pub struct CreatUserReq {
 pub async fn create_user(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareResult<Ctx> {
     let CreatUserReq { username, password } =
         serde_urlencoded::from_str(&context.body_string().await.map_err(|_e| {
-            println!("_e: {:#?}", _e);
+            error!("_e: {:#?}", _e);
             ThrusterError::parsing_error(
                 Ctx::new_without_request(context.extra.clone()),
                 "Bad request",
             )
         })?)
         .map_err(|_e| {
-            println!("_e: {:#?}", _e);
+            error!("_e: {:#?}", _e);
             ThrusterError::parsing_error(
                 Ctx::new_without_request(context.extra.clone()),
                 "Bad request",
@@ -43,7 +44,7 @@ pub async fn create_user(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> Middle
         .hash_password(password.as_bytes(), salt.as_ref())
         .map(|h| h.to_string())
         .map_err(|_e| {
-            println!("_e: {:#?}", _e);
+            error!("_e: {:#?}", _e);
 
             ThrusterError::parsing_error(
                 Ctx::new_without_request(context.extra.clone()),
@@ -55,7 +56,7 @@ pub async fn create_user(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> Middle
     let user = User::create_user(&context.extra.pool, &username, &password_hash)
         .await
         .map_err(|_e| {
-            println!("_e: {:#?}", _e);
+            error!("_e: {:#?}", _e);
 
             ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
         })?;
@@ -63,7 +64,7 @@ pub async fn create_user(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> Middle
     let session = Session::create_session(&context.extra.pool, &user.id)
         .await
         .map_err(|_e| {
-            println!("_e: {:#?}", _e);
+            error!("_e: {:#?}", _e);
 
             ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
         })?;
@@ -91,14 +92,14 @@ pub struct SignInReq {
 pub async fn sign_in_user(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareResult<Ctx> {
     let SignInReq { username, password } =
         serde_urlencoded::from_str(&context.body_string().await.map_err(|_e| {
-            println!("_e: {:#?}", _e);
+            error!("_e: {:#?}", _e);
             ThrusterError::parsing_error(
                 Ctx::new_without_request(context.extra.clone()),
                 "Bad request",
             )
         })?)
         .map_err(|_e| {
-            println!("_e: {:#?}", _e);
+            error!("_e: {:#?}", _e);
             ThrusterError::parsing_error(
                 Ctx::new_without_request(context.extra.clone()),
                 "Bad request",
@@ -108,7 +109,7 @@ pub async fn sign_in_user(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> Middl
     let user = User::get_user_for_username(&context.extra.pool, &username)
         .await
         .map_err(|_e| {
-            println!("_e: {:#?}", _e);
+            error!("_e: {:#?}", _e);
 
             ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
         })?;
@@ -123,7 +124,7 @@ pub async fn sign_in_user(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> Middl
         let session = Session::create_session(&context.extra.pool, &user.id)
             .await
             .map_err(|_e| {
-                println!("_e: {:#?}", _e);
+                error!("_e: {:#?}", _e);
 
                 ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
             })?;
