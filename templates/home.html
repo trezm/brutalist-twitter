@@ -1,0 +1,13 @@
+{% extends "base.html" %} {% block head %} {% endblock %}
+
+<!-- Body -->
+{% block body %}
+<section>{% include "navbar.html" %}</section>
+
+<section>
+  {% if user.is_some() %} {% let create_tweet_route = "/tweets" %} {% include
+  "create_tweet.html" %} {% endif %}
+</section>
+
+<section class="content">{% include "feed.html" %}</section>
+{% endblock %}

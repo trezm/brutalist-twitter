@@ -1,0 +1,16 @@
+{% extends "base.html" %} {% block head %} {% endblock %}
+
+<!-- Body -->
+{% block body %}
+<section>{% include "navbar.html" %}</section>
+
+<section>{% include "tweet.html" %}</section>
+
+<section>
+  <ul class="replies">
+    {% for tweet in replies %}
+    <li>{% include "tweet.html" %}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

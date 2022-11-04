@@ -1,0 +1,13 @@
+{% extends "base.html" %} {% block head %} {% endblock %}
+
+<!-- Body -->
+{% block body %}
+<section class="content">
+  <form action="/sessions" method="post">
+    <input placeholder="username" name="username" />
+    <input placeholder="password" name="password" type="password" />
+    <input type="submit" value="Sign In" />
+  </form>
+  Or <a href="/signup">sign up</a>
+</section>
+{% endblock %}

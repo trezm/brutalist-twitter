@@ -1,0 +1,18 @@
+{% extends "base.html" %} {% block head %} {% endblock %}
+
+<!-- Body -->
+{% block body %}
+<section>
+  <nav>{{ user.username }}</nav>
+</section>
+
+<section>
+  <h3>Replying to:</h3>
+  {% include "tweet.html" %}
+</section>
+
+<section>
+  {% let create_tweet_route = format!("/tweets/{}/replies", self.tweet.id) %} {%
+  include "create_tweet.html" %}
+</section>
+{% endblock %}

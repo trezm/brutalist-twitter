@@ -1,0 +1,28 @@
+<div class="tweet">
+  <a href="/tweets/{{ tweet.id }}">
+    <p class="author"><b>{{ tweet.username }}</b></p>
+    <p class="content">{{ tweet.content }}</p>
+    <p class="timestamp"><i>{{ tweet.created_at }}</i></p>
+  </a>
+  <ul>
+    <li>
+      <form action="/tweets/{{ tweet.id }}/likes" method="POST">
+        {{ tweet.like_count }} {% if tweet.user_has_liked %} ❤️ {% else %}
+        <input type="submit" value="❤️" />
+        {% endif %}
+      </form>
+    </li>
+    <li>
+      <form action="/tweets/{{ tweet.id }}/retweets" method="POST">
+        {{ tweet.retweet_count }} {% if tweet.user_has_retweeted %} ♺ {% else %}
+        <input type="submit" value="♺" />
+        {% endif %}
+      </form>
+    </li>
+    <li>
+      <form action="/tweets/{{ tweet.id }}/replies" method="GET">
+        {{ tweet.reply_count }} <input type="submit" value="💬" />
+      </form>
+    </li>
+  </ul>
+</div>

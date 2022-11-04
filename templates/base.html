@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="title" content="Bitter" />
+    <meta name="description" content="Twitter, but better!" />
+    <meta name="keywords" content="twitter,social,bitter" />
+    <meta name="robots" content="index, follow" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="language" content="en-us" />
+    <style>
+      body {
+        padding: 20px;
+      }
+
+      section {
+        margin: 0 auto;
+        display: block;
+        max-width: 600px;
+      }
+
+      .feed {
+        padding: 0;
+        list-style: none;
+      }
+
+      .feed > li {
+        border-bottom: 1px solid gray;
+      }
+
+      .tweet ul {
+        padding: 0;
+      }
+
+      .tweet ul > li {
+        display: inline-block;
+        margin-left: 0;
+        padding-right: 20px;
+      }
+
+      textarea {
+        width: 100%;
+      }
+    </style>
+    {% block head %} {% endblock %}
+  </head>
+  <body>
+    {% block body %} {% endblock %}
+  </body>
+</html>
