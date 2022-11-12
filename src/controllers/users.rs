@@ -9,6 +9,7 @@ use thruster::{
     middleware::cookies::CookieOptions,
     middleware_fn, MiddlewareNext, MiddlewareResult,
 };
+use uuid::Uuid;
 
 use crate::{
     app::Ctx,
@@ -141,6 +142,32 @@ pub async fn sign_in_user(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> Middl
     } else {
         return Err(ThrusterError::unauthorized_error(context));
     }
+
+    Ok(context)
+}
+
+#[derive(Deserialize)]
+pub struct FollowUser {
+    pub user_id: Uuid,
+}
+
+#[middleware_fn]
+pub async fn follow_user(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareResult<Ctx> {
+    let FollowUser { user_id } =
+        serde_urlencoded::from_str(&context.body_string().await.map_err(|_e| {
+            error!("_e: {:#?}", _e);
+            ThrusterError::parsing_error(
+                Ctx::new_without_request(context.extra.clone()),
+                "Bad request",
+            )
+        })?)
+        .map_err(|_e| {
+            error!("_e: {:#?}", _e);
+            ThrusterError::parsing_error(
+                Ctx::new_without_request(context.extra.clone()),
+                "Bad request",
+            )
+        })?;
 
     Ok(context)
 }

@@ -20,7 +20,7 @@ impl User {
     ) -> Result<User, sqlx::Error> {
         sqlx::query_as(
             "
-            INSERT INTO users (username, password)
+            INSERT INTO users (LOWER(username), password)
             VALUES ($1, $2)
             RETURNING id, username, password, created_at",
         )
@@ -46,7 +46,7 @@ impl User {
     ) -> Result<User, sqlx::Error> {
         sqlx::query_as(
             "
-            SELECT id, username, password, created_at FROM users WHERE username = $1",
+            SELECT id, username, password, created_at FROM users WHERE username = LOWER($1)",
         )
         .bind(username)
         .fetch_one(pool)

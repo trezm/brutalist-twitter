@@ -1,0 +1,21 @@
+{% extends "base.html" %} {% block head %} {% endblock %}
+
+<!-- Body -->
+{% block body %}
+<section>{% include "navbar.html" %}</section>
+
+<section>
+  <h2>{{ page_user.username }}</h2>
+  <div>
+    {{ following_count }} <span>Following</span>, {{ follower_count }}
+    <span>Followers</span>
+  </div>
+</section>
+
+<section>
+  {% if user.is_some() && user == Some(&page_user) %} {% let create_tweet_route
+  = "/tweets" %} {% include "create_tweet.html" %} {% endif %}
+</section>
+
+<section class="content">{% include "feed.html" %}</section>
+{% endblock %}

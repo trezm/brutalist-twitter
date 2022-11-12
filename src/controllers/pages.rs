@@ -50,7 +50,6 @@ pub struct Feed<'a> {
 
 #[middleware_fn]
 pub async fn home(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareResult<Ctx> {
-    info!("Starting home...");
     let user = context.extra.user.clone();
     let user_id = context.extra.user.clone().map(|v| v.id);
 
@@ -73,7 +72,6 @@ pub async fn home(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareRes
         .render()
         .unwrap(),
     );
-    info!("Ending home...");
 
     Ok(context)
 }
@@ -151,6 +149,58 @@ pub async fn single_tweet(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> Middl
             user: context.extra.user.as_ref(),
             tweet,
             replies,
+        }
+        .render()
+        .unwrap(),
+    );
+
+    Ok(context)
+}
+
+#[derive(Template)]
+#[template(path = "user.html")]
+pub struct UserPage<'a> {
+    user: Option<&'a User>,
+    page_user: User,
+    feed: Vec<TweetWithUserInfo>,
+    following_count: u64,
+    foller_count: u64,
+}
+
+#[middleware_fn]
+pub async fn user_page(mut context: Ctx, _next: MiddlewareNext<Ctx>) -> MiddlewareResult<Ctx> {
+    let user = context.extra.user.clone();
+    let user_id = context.extra.user.clone().map(|v| v.id);
+
+    let page_user_id = context
+        .params()
+        .get("id")
+        .and_then(|id_string| Uuid::from_str(&id_string.param).ok())
+        .ok_or(ThrusterError::generic_error(Ctx::new_without_request(
+            context.extra.clone(),
+        )))?;
+    let page_user = User::get_user_for_id(&context.extra.pool, &page_user_id)
+        .await
+        .map_err(|_e| {
+            error!("_e: {:#?}", _e);
+            ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
+        })?;
+
+    context.set("Content-Type", "text/html");
+    context.body(
+        &UserPage {
+            user: user.as_ref(),
+            feed: Tweet::get_recent_tweets_with_user_info(
+                &context.extra.pool,
+                user_id.as_ref(),
+                None,
+            )
+            .await
+            .map_err(|_e| {
+                error!("_e: {:#?}", _e);
+                ThrusterError::generic_error(Ctx::new_without_request(context.extra.clone()))
+            })?,
+            page_user,
         }
         .render()
         .unwrap(),
